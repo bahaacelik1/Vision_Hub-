@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vision-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: vision
+      POSTGRES_PASSWORD: vision
+      POSTGRES_DB: vision
+    volumes:
+      - vision-pgdata:/var/lib/postgresql/data
+
+volumes:
+  vision-pgdata:

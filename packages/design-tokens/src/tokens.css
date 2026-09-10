@@ -1,0 +1,54 @@
+/**
+ * Vision CSS Custom Properties
+ * Light / Dark tema desteği. Tasarım referansı geldiğinde güncellenecek.
+ */
+
+:root {
+  /* Brand — Vision (ortak kimlik) */
+  --vision-50: #f5f3ff;
+  --vision-100: #ede9fe;
+  --vision-500: #7c3aed;
+  --vision-600: #6d28d9;
+  --vision-900: #4c1d95;
+
+  /* Brand — Hub */
+  --hub-500: #2563eb;
+  --hub-600: #1d4ed8;
+
+  /* Brand — Social */
+  --social-500: #f97316;
+  --social-600: #ea580c;
+
+  /* Surface / Background */
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --bg-muted: #f4f4f5;
+  --border: #e4e4e7;
+
+  /* Text */
+  --fg: #18181b;
+  --fg-muted: #71717a;
+  --fg-subtle: #a1a1aa;
+
+  /* Semantic */
+  --success: #16a34a;
+  --warning: #eab308;
+  --danger: #dc2626;
+  --info: #0ea5e9;
+
+  /* Radius */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+[data-theme='dark'] {
+  --bg: #0a0a0b;
+  --bg-subtle: #111113;
+  --bg-muted: #1c1c1f;
+  --border: #2a2a2e;
+  --fg: #fafafa;
+  --fg-muted: #a1a1aa;
+  --fg-subtle: #71717a;
+}

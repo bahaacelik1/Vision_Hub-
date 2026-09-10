@@ -1,0 +1,4 @@
+{
+  "extends": "@vision/config/tsconfig.base.json",
+  "include": ["src"]
+}

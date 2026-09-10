@@ -1,0 +1,261 @@
+// Vision Ekosistemi — Prisma Schema
+// Ortak hesap, iki alan (Hub + Social) tek veritabanı.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------- Kimlik & Profil ----------
+
+enum UserRole {
+  STUDENT
+  COMPANY
+  UNIVERSITY_REP
+  ADMIN
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  role          UserRole @default(STUDENT)
+  emailVerified DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile          Profile?
+  applications     Application[]
+  createdEvents    Event[]           @relation("EventCreator")
+  attendances      EventAttendance[]
+  teamMemberships  TeamMember[]
+  companyAdmin     Company?          @relation("CompanyAdmin")
+  universityRep    UniversityRep?
+}
+
+model Profile {
+  userId       String   @id
+  displayName  String
+  avatarUrl    String?
+  bio          String?
+  universityId String?
+  department   String?
+  cityId       String?
+  interests    String[]
+  skills       String[]
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  university University? @relation(fields: [universityId], references: [id])
+  city       City?       @relation(fields: [cityId], references: [id])
+}
+
+// ---------- Referans ----------
+
+model City {
+  id       String   @id @default(cuid())
+  name     String
+  country  String   @default("TR")
+  profiles Profile[]
+  events   Event[]
+  universities University[]
+}
+
+model University {
+  id       String   @id @default(cuid())
+  name     String
+  cityId   String
+  city     City     @relation(fields: [cityId], references: [id])
+  profiles Profile[]
+  reps     UniversityRep[]
+}
+
+model UniversityRep {
+  id           String     @id @default(cuid())
+  userId       String     @unique
+  universityId String
+  approvedAt   DateTime?
+  user         User       @relation(fields: [userId], references: [id])
+  university   University @relation(fields: [universityId], references: [id])
+}
+
+// ---------- Vision Hub ----------
+
+enum ApprovalStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  logoUrl     String?
+  website     String?
+  description String?
+  verified    Boolean  @default(false)
+  adminUserId String?  @unique
+  admin       User?    @relation("CompanyAdmin", fields: [adminUserId], references: [id])
+  createdAt   DateTime @default(now())
+
+  opportunities Opportunity[]
+  projects      Project[]
+}
+
+enum OpportunityType {
+  INTERNSHIP
+  JOB
+  SCHOLARSHIP
+  COMPETITION
+  OTHER
+}
+
+model Opportunity {
+  id           String          @id @default(cuid())
+  title        String
+  type         OpportunityType
+  companyId    String
+  description  String
+  requirements String?
+  location     String?
+  remote       Boolean         @default(false)
+  deadline     DateTime?
+  status       ApprovalStatus  @default(DRAFT)
+  createdAt    DateTime        @default(now())
+
+  company      Company        @relation(fields: [companyId], references: [id])
+  applications Application[]
+}
+
+enum ApplicationStatus {
+  PENDING
+  REVIEWED
+  ACCEPTED
+  REJECTED
+}
+
+model Application {
+  id            String            @id @default(cuid())
+  opportunityId String
+  userId        String
+  status        ApplicationStatus @default(PENDING)
+  submittedAt   DateTime          @default(now())
+
+  opportunity Opportunity @relation(fields: [opportunityId], references: [id])
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@unique([opportunityId, userId])
+}
+
+model Project {
+  id          String         @id @default(cuid())
+  title       String
+  companyId   String?
+  description String
+  tags        String[]
+  status      ApprovalStatus @default(DRAFT)
+  createdAt   DateTime       @default(now())
+
+  company Company? @relation(fields: [companyId], references: [id])
+}
+
+// ---------- Vision Social ----------
+
+enum EventCategory {
+  CAMP_NATURE
+  SPORTS
+  TRIP
+  CONCERT
+  CINEMA
+  THEATER
+  GAME
+  MEETUP
+  TREKKING
+  CYCLING
+  ARTS_CULTURE
+  SOCIAL_RESPONSIBILITY
+  INTER_UNIVERSITY
+}
+
+enum EventOwnerType {
+  VISION_CENTER
+  UNIVERSITY_REP
+  STUDENT
+}
+
+model Event {
+  id             String         @id @default(cuid())
+  title          String
+  category       EventCategory
+  ownerType      EventOwnerType
+  createdById    String
+  description    String
+  startsAt       DateTime
+  endsAt         DateTime?
+  cityId         String
+  location       String
+  meetingPoint   String?
+  capacity       Int?
+  price          Decimal?       @db.Decimal(10, 2)
+  requirements   String?
+  program        String?
+  status         ApprovalStatus @default(DRAFT)
+  waitlistEnabled Boolean       @default(false)
+  createdAt      DateTime       @default(now())
+
+  createdBy   User              @relation("EventCreator", fields: [createdById], references: [id])
+  city        City              @relation(fields: [cityId], references: [id])
+  attendances EventAttendance[]
+  teams       Team[]
+
+  @@index([cityId, startsAt])
+  @@index([category])
+  @@index([status])
+}
+
+enum AttendanceState {
+  REGISTERED
+  WAITLIST
+  CANCELLED
+  ATTENDED
+}
+
+model EventAttendance {
+  id          String          @id @default(cuid())
+  eventId     String
+  userId      String
+  state       AttendanceState @default(REGISTERED)
+  registeredAt DateTime       @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([eventId, userId])
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  captainId String
+  eventId   String?
+  capacity  Int
+  createdAt DateTime @default(now())
+
+  event   Event?       @relation(fields: [eventId], references: [id])
+  members TeamMember[]
+}
+
+model TeamMember {
+  id     String @id @default(cuid())
+  teamId String
+  userId String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@unique([teamId, userId])
+}

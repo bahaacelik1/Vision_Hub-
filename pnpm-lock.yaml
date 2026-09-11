@@ -237,6 +237,9 @@ importers:
       '@vision/auth':
         specifier: workspace:*
         version: link:../../packages/auth
+      '@vision/database':
+        specifier: workspace:*
+        version: link:../../packages/database
       '@vision/design-tokens':
         specifier: workspace:*
         version: link:../../packages/design-tokens
@@ -322,6 +325,9 @@ importers:
       '@prisma/client':
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)
+      bcryptjs:
+        specifier: ^2.4.3
+        version: 2.4.3
     devDependencies:
       prisma:
         specifier: ^5.22.0

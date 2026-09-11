@@ -37,8 +37,13 @@ model User {
   universityRep    UniversityRep?
 }
 
+enum ProfileMode {
+  HUB
+  SOCIAL
+}
+
 model Profile {
-  userId       String   @id
+  userId       String        @id
   displayName  String
   avatarUrl    String?
   bio          String?
@@ -47,6 +52,9 @@ model Profile {
   cityId       String?
   interests    String[]
   skills       String[]
+  /// Kullanıcının ilk girişte seçtiği ve varsayılan olarak yönlendirileceği alan.
+  /// null = henüz seçim yapılmadı; sign in sonrası /select-mode'a gönderilir.
+  defaultMode  ProfileMode?
 
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   university University? @relation(fields: [universityId], references: [id])

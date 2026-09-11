@@ -7,6 +7,7 @@ const config: Config = {
     '../../packages/ui/src/**/*.{ts,tsx}',
   ],
   presets: [preset as Config],
+  darkMode: ['selector', 'html[data-theme="dark"]'],
 };
 
 export default config;

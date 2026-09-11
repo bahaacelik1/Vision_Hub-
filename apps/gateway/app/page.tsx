@@ -1,85 +1,74 @@
 import Link from 'next/link';
+import { Button, ThemeToggle } from '@vision/ui';
 
 /**
- * Ana giriş — kullanıcı Vision Hub ile Vision Social arasında seçim yapar.
- * Arka planda ortak Vision hesabı ve ekosistemi bulunur.
+ * Screen 1: Welcome
+ * Full viewport. Sakin, ferah, premium his.
  */
-export default function GatewayPage() {
+export default function WelcomePage() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-16 gap-16">
-      <header className="text-center max-w-xl">
-        <div className="inline-block mb-6 px-4 py-1.5 rounded-full bg-vision-100 text-vision-900 text-sm font-medium">
-          VISION
+    <div className="min-h-screen flex flex-col bg-canvas text-fg">
+      <header className="h-16 px-8 flex items-center justify-between">
+        <VisionLogo />
+        <div className="flex items-center gap-2">
+          <button className="text-sm text-fg-muted hover:text-fg h-11 px-3 rounded-md">TR</button>
+          <ThemeToggle />
         </div>
-        <h1 className="text-4xl md:text-5xl font-semibold tracking-tight">
-          Üniversite hayatının tamamı, tek ekosistemde.
-        </h1>
-        <p className="mt-4 text-neutral-500 text-lg">
-          Nereden başlamak istersin?
-        </p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
-        <AreaCard
-          href={process.env.NEXT_PUBLIC_HUB_URL ?? 'http://localhost:3001'}
-          tone="hub"
-          title="Vision Hub"
-          subtitle="Profesyonel & Akademik"
-          description="Fırsatlar, projeler, şirketler, üniversiteler, Academy ve kariyer."
-          items={['Fırsatlar', 'Projeler', 'Başvurular', 'Academy']}
-        />
-        <AreaCard
-          href={process.env.NEXT_PUBLIC_SOCIAL_URL ?? 'http://localhost:3002'}
-          tone="social"
-          title="Vision Social"
-          subtitle="Sosyal Yaşam & Topluluk"
-          description="Etkinlikler, şehir, üniversite, spor, gezi, kültür-sanat."
-          items={['Etkinlikler', 'Topluluk', 'Takvim', 'Takımlar']}
-        />
-      </div>
+      <main className="flex-1 flex flex-col items-center justify-center px-6 relative overflow-hidden">
+        <MeshBackground />
 
-      <footer className="text-sm text-neutral-500">
-        Ortak Vision hesabı — iki alanda da geçerli.
+        <div className="relative z-10 max-w-2xl text-center space-y-6">
+          <h1 className="text-[48px] leading-[1.1] font-bold tracking-tight">
+            Öğrencilerin{' '}
+            <span className="bg-gradient-to-r from-hub-500 to-social-500 bg-clip-text text-transparent">
+              tanıştığı, öğrendiği, ürettiği
+            </span>{' '}
+            tek platform.
+          </h1>
+          <p className="text-lg text-fg-muted max-w-xl mx-auto">
+            Akademik yolculuğun ve öğrenci hayatın için tek hesap. Vision Hub ile fırsatları
+            keşfet, Vision Social ile toplulukla buluş.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 items-center justify-center pt-4">
+            <Link href="/signin">
+              <Button size="lg" className="px-8">
+                Giriş Yap
+              </Button>
+            </Link>
+            <Link href="/signin?tab=signup" className="text-sm text-fg-muted hover:text-fg">
+              Hesabın yok mu? <span className="text-link font-medium">Hemen oluştur</span>
+            </Link>
+          </div>
+        </div>
+      </main>
+
+      <footer className="py-6 text-center text-[12px] text-fg-muted">
+        © 2026 Vision Ecosystem
       </footer>
-    </main>
+    </div>
   );
 }
 
-interface AreaCardProps {
-  href: string;
-  tone: 'hub' | 'social';
-  title: string;
-  subtitle: string;
-  description: string;
-  items: string[];
+function VisionLogo() {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-hub-500 to-social-500 flex items-center justify-center text-white font-bold">
+        V
+      </div>
+      <span className="font-semibold tracking-tight text-lg">Vision</span>
+    </div>
+  );
 }
 
-function AreaCard({ href, tone, title, subtitle, description, items }: AreaCardProps) {
-  const accent =
-    tone === 'hub'
-      ? 'from-hub-500/10 border-hub-500/30 hover:border-hub-500'
-      : 'from-social-500/10 border-social-500/30 hover:border-social-500';
-  const tag =
-    tone === 'hub' ? 'bg-hub-500 text-white' : 'bg-social-500 text-white';
-
+function MeshBackground() {
   return (
-    <Link
-      href={href}
-      className={`group relative rounded-2xl border-2 bg-gradient-to-br ${accent} p-8 transition-all hover:scale-[1.02]`}
-    >
-      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${tag}`}>
-        {subtitle}
-      </span>
-      <h2 className="mt-4 text-3xl font-bold">{title}</h2>
-      <p className="mt-2 text-neutral-600">{description}</p>
-      <ul className="mt-6 space-y-1 text-sm text-neutral-700">
-        {items.map((i) => (
-          <li key={i}>• {i}</li>
-        ))}
-      </ul>
-      <span className="absolute bottom-6 right-8 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-        Devam et →
-      </span>
-    </Link>
+    <div aria-hidden className="absolute inset-0 pointer-events-none">
+      <div className="absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-hub-500/20 blur-3xl" />
+      <div className="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-social-500/20 blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[300px] w-[300px] rounded-full bg-hub-200/30 blur-3xl" />
+    </div>
   );
 }

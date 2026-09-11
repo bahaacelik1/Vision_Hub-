@@ -1,53 +1,53 @@
-import { AreaSwitcher } from '@vision/ui';
+import { redirect } from 'next/navigation';
+import { auth } from '@vision/auth';
+import { UserMenu } from '@vision/ui';
+import { SocialShell } from './_components/shell';
+import { StoryBar } from './_components/story-bar';
+import { Compose } from './_components/compose';
+import { PostCard } from './_components/post-card';
+import { RightRail } from './_components/right-rail';
+import { feed } from './_data/feed';
 
-export default function SocialHomePage() {
+const GATEWAY_URL = process.env.NEXT_PUBLIC_GATEWAY_URL ?? 'http://localhost:3000';
+
+export default async function SocialFeedPage() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect(`${GATEWAY_URL}/signin`);
+  }
+  const defaultMode = (session.user as { defaultMode?: 'HUB' | 'SOCIAL' | null }).defaultMode;
+  if (!defaultMode) {
+    redirect(`${GATEWAY_URL}/select-mode`);
+  }
+
+  const userName = session.user.name ?? session.user.email ?? 'Öğrenci';
   return (
-    <main className="min-h-screen">
-      <header className="border-b border-neutral-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-bold text-social-500">Vision Social</span>
-        </div>
-        <AreaSwitcher
-          active="social"
-          hubHref={process.env.NEXT_PUBLIC_HUB_URL ?? 'http://localhost:3001'}
-          socialHref="/"
-        />
-      </header>
+    <SocialShell>
+      <div className="mx-auto max-w-[1200px] flex gap-8 px-6">
+        {/* Feed column */}
+        <div className="flex-1 max-w-[600px] mx-auto py-6 space-y-4">
+          <div className="flex items-center justify-between gap-4">
+            <h1 className="text-[22px] font-semibold">Ana Sayfa</h1>
+            <UserMenu name={userName} email={session.user.email ?? undefined} />
+          </div>
 
-      <section className="px-6 py-16 max-w-6xl mx-auto">
-        <h1 className="text-4xl font-semibold">Şehrinde neler oluyor?</h1>
-        <p className="mt-3 text-neutral-500 text-lg">
-          Etkinlik keşfet, katıl, insanlarla tanış, kendi etkinliğini oluştur.
-        </p>
+          <StoryBar currentName={userName} />
+          <Compose userName={userName} />
 
-        <div className="mt-10 flex flex-wrap gap-2">
-          {['Bu hafta sonu', 'Yakınında', 'Üniversiteler arası', 'Spor', 'Gezi', 'Kültür-Sanat'].map(
-            (f) => (
-              <span
-                key={f}
-                className="px-3 py-1.5 rounded-full border border-neutral-200 text-sm hover:border-social-500 cursor-pointer"
-              >
-                {f}
-              </span>
-            ),
-          )}
+          <div className="space-y-4">
+            {feed.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
+          </div>
+
+          <p className="text-center text-[12px] text-fg-muted py-6">
+            Tüm gönderileri gördün. Yeni bir şey paylaşmak ister misin? ✨
+          </p>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <article
-              key={i}
-              className="rounded-lg border border-neutral-200 overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <div className="aspect-video bg-gradient-to-br from-social-500/20 to-vision-500/20" />
-              <div className="p-4">
-                <div className="text-xs text-neutral-500">Örnek • İstanbul</div>
-                <div className="mt-1 font-medium">Etkinlik Başlığı #{i}</div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-    </main>
+        {/* Right rail */}
+        <RightRail userName={userName} city="İstanbul" />
+      </div>
+    </SocialShell>
   );
 }

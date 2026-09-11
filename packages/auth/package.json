@@ -3,5 +3,25 @@
   "version": "0.0.0",
   "private": true,
   "main": "./src/index.ts",
-  "types": "./src/index.ts"
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./server": "./src/server.ts",
+    "./register": "./src/register.ts"
+  },
+  "dependencies": {
+    "@vision/database": "workspace:*",
+    "@vision/types": "workspace:*",
+    "bcryptjs": "^2.4.3",
+    "next-auth": "5.0.0-beta.25",
+    "zod": "^3.24.1"
+  },
+  "peerDependencies": {
+    "next": "^15.0.0",
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6"
+  }
 }

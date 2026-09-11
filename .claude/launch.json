@@ -1,0 +1,8 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "gateway", "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "@vision/gateway", "dev"], "port": 3000 },
+    { "name": "hub",     "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "@vision/hub", "dev"],     "port": 3001 },
+    { "name": "social",  "runtimeExecutable": "pnpm", "runtimeArgs": ["--filter", "@vision/social", "dev"],  "port": 3002 }
+  ]
+}

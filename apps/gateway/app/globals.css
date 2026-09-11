@@ -5,8 +5,13 @@
 @tailwind utilities;
 
 html, body {
-  background: var(--bg);
-  color: var(--fg);
-  font-family: Inter, system-ui, sans-serif;
+  background: var(--color-bg-canvas);
+  color: var(--color-text-primary);
+  font-family: var(--font-inter, Inter), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-selection-bg);
 }
